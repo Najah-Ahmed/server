@@ -56,7 +56,7 @@ class FeedbacksResource(Resource):
           db.session.commit()
           return{"message": " Successfully deleted."}, 200
           
-        return {"error":" You Dont have previlege to update other users feedback"},403
+        return {"error":" You Dont have previlege to delete other users feedback"},403
 
 
 class FeedbacksList(Resource):

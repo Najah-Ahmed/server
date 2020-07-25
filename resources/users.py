@@ -8,6 +8,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
 from flask_mail import Message
 
+
+# email confirmed 
+# phone confired
+# sent email or phone to forgetpassword 
+
+
+
+
+
 class UserRegister(Resource):
 
     def post(self):
@@ -47,7 +56,6 @@ class UserLogin(Resource):
         user = UsersModel.query.filter_by(email=email).first()
         check_password = check_password_hash(user.password, password)
         if not check_password:
-            print(check_password)
             return {'error': 'wrong password'}, 400
         expires = timedelta(days=10)
         identities = user.email

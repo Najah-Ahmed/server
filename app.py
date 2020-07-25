@@ -7,7 +7,7 @@ from flask_mail import Message
 
 from resources.users import UserLogin, UserRegister, UserReset, UserResource, Userslist
 from resources.tickets import TicketsList, TicketsResource
-from resources.feedback import FeedbacksResource, FeedbacksList,Feedbacks
+from resources.feedback import FeedbacksResource, Feedbacks
 from resources.booking import BookingsList, BookingsResource
 from resources.payment import PaymentsList, PaymentsResource
 import config
@@ -41,14 +41,15 @@ api.add_resource(TicketsResource, '/api/v1/ticket/<int:id>')
 # # *** end tickets endpoints
 
 # # *** start feedback endpoints
-api.add_resource(FeedbacksList, '/api/v1/feedback')
+# api.add_resource(FeedbacksList, '/api/v1/feedback')
 api.add_resource(FeedbacksResource, '/api/v1/feedback/<int:feedback_id>')
 api.add_resource(Feedbacks, '/api/v1/ticket/<int:id>/feedback')
 
 # # *** end feedback endpoints
 
 # # *** start booking endpoints
-api.add_resource(BookingsList, '/api/v1/bookings')
+# api.add_resource(BookingsList, '/api/v1/bookings?q=<string:arrived>/<string:destination>/<string:time>')
+api.add_resource(BookingsList, '/api/v1/bookings/')
 api.add_resource(BookingsResource, '/api/v1/booking/<int:booking_id>')
 # # *** end booking endpoints
 

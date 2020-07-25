@@ -43,7 +43,7 @@ class TicketsResource(Resource):
     def get(self, id):
         ticket = TicketModel.query.get(id)
         if not ticket:
-            return {"message": "Not found User"}, 404
+            return {"message": "Not found Ticket"}, 404
         result = ticket_schema.dump(ticket)
         return jsonify(result)
 
@@ -54,7 +54,7 @@ class TicketsResource(Resource):
         if user.is_Admin == True:
             ticket = TicketModel.query.get(id)
             if not ticket:
-                return {"message": "Not found User"}, 404
+                return {"message": "Not found Ticket"}, 404
             arriced_place = request.json['arriced_place']
             destination_place = request.json['destination_place']
             bus_id = request.json['bus_id']
@@ -74,7 +74,7 @@ class TicketsResource(Resource):
             db.session.commit()
             result = ticket_schema.dump(ticket)
             return jsonify(result)
-        return {"message":" NOT HAVE RIGHT PRIVAGE TO CREATE TRAVEL PLEASE CONTACT YOUR ADMIN"},403
+        return {"message":" NOT HAVE RIGHT PRIVAGE TO UPDATE TRAVEL PLEASE CONTACT YOUR ADMIN"},403
       
       
     @jwt_required
@@ -84,8 +84,8 @@ class TicketsResource(Resource):
         if user.is_Admin == True:
             ticket = TicketModel.query.get(id)
             if not ticket:
-                return {"message": "Not found User"}, 404
+                return {"message": "Not found Ticket"}, 404
             db.session.delete(ticket)
             db.session.commit()
             return{"message": " Successfully deleted."}, 200
-        return {"message":" NOT HAVE RIGHT PRIVAGE TO CREATE TRAVEL PLEASE CONTACT YOUR ADMIN"},403
+        return {"message":" NOT HAVE RIGHT PRIVAGE TO DELETE TRAVEL PLEASE CONTACT YOUR ADMIN"},403
