@@ -2,6 +2,7 @@ from db import db
 from .booking import BookingModel
 from .payment import PaymentModel
 from .feedback import FeedbackModel
+from .packages import PackagesModel
 from itsdangerous import TimedJSONWebSignatureSerializer as serializer
 
 
@@ -21,6 +22,7 @@ class UsersModel(db.Model):
     feedback = db.relationship(
         'FeedbackModel', backref='owner', lazy='dynamic')
     booking = db.relationship('BookingModel', backref='owner',  lazy='dynamic')
+    packages = db.relationship('PackagesModel', backref='owner',  lazy='dynamic')
     payment = db.relationship('PaymentModel', backref='owner',  lazy='dynamic' )
     created_at = db.Column(db.DateTime)
     

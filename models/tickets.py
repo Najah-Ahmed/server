@@ -19,9 +19,10 @@ class TicketModel(db.Model):
         'BookingModel', backref='ticket', lazy='dynamic')
     feedback = db.relationship(
         'FeedbackModel', backref='ticket', lazy='dynamic')
+    date_of_day = db.Column(db.Date)
     created_at = db.Column(db.DateTime)
 
-    def __init__(self, arriced_place, destination_place, bus_id, bus_no_seat, price_per_seat, url,time_of_journery, time_of_arrived, created_at):
+    def __init__(self, arriced_place, destination_place, bus_id, bus_no_seat, price_per_seat, url,time_of_journery, time_of_arrived,date_of_day, created_at):
         self.arriced_place = arriced_place
         self.destination_place = destination_place
         self. bus_id = bus_id
@@ -30,6 +31,7 @@ class TicketModel(db.Model):
         self.time_of_journery = time_of_journery
         self.time_of_arrived = time_of_arrived
         self.url = url
+        self.date_of_day = date_of_day
         self.created_at = created_at
 
     # def save_to_db(self):

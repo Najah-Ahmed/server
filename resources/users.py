@@ -1,4 +1,4 @@
-from flask import request, jsonify, Response,render_template
+from flask import request, jsonify, Response, render_template
 from datetime import datetime, timedelta
 from flask_restful import Resource
 from schema.user import user_schema, users_schema
@@ -9,12 +9,9 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from flask_mail import Message
 
 
-# email confirmed 
+# email confirmed
 # phone confired
-# sent email or phone to forgetpassword 
-
-
-
+# sent email or phone to forgetpassword
 
 
 class UserRegister(Resource):
@@ -61,11 +58,12 @@ class UserLogin(Resource):
         identities = user.email
         access_token = create_access_token(
             identity=identities, expires_delta=expires)
+
         return {'access_token': access_token}
 
 
 class UserReset(Resource):
-  
+
     def post(self):
         email = request.json['email']
         user = UsersModel.query.filter_by(email=email).first()
@@ -73,9 +71,9 @@ class UserReset(Resource):
             return {'error': 'Not found email '}, 404
         expires = timedelta(hours=3)
         identities = email
-        reset_token = create_access_token(identity=identities, expires_delta=expires)
-        return {"message":"okey"}
-
+        reset_token = create_access_token(
+            identity=identities, expires_delta=expires)
+        return {"message": "okey"}
 
 
 class Userslist(Resource):
@@ -96,16 +94,16 @@ class UserResource(Resource):
     @jwt_required
     def get(self, user_id):
         user_from_token = get_jwt_identity()
-        current_user = UsersModel.query.filter_by(email=user_from_token).first()
+        current_user = UsersModel.query.filter_by(
+            email=user_from_token).first()
         check_if_user_exists = UsersModel.query.get(user_id)
         if not check_if_user_exists:
-          return {"message": "Not found User"}, 404
-        if current_user.id==user_id:
+            return {"message": "Not found User"}, 404
+        if current_user.id == user_id:
             users = UsersModel.query.get(user_id)
             result = user_schema.dump(users)
-            return jsonify(result)
-        return { "error":" You Dont have previlege to view other users"},403
-        
+            return jsonify(result=result)
+        return {"error": " You Dont have previlege to view other users"}, 403
 
     @jwt_required
     def put(self, user_id):
@@ -118,7 +116,8 @@ class UserResource(Resource):
         phoneNum = request.json['phoneNum']
         create_Admin = request.json['is_Admin']
         user_from_token = get_jwt_identity()
-        current_user = UsersModel.query.filter_by(email=user_from_token).first()
+        current_user = UsersModel.query.filter_by(
+            email=user_from_token).first()
         if current_user.is_Admin == True:
             users.fullName = fullName
             users.userName = userName
@@ -128,24 +127,36 @@ class UserResource(Resource):
             db.session.commit()
             result = user_schema.dump(users)
             return jsonify(result)
-        if current_user.id==user_id:
+        if current_user.id == user_id:
             users.fullName = fullName
             users.userName = userName
             users.email = email
             users.phoneNum = phoneNum
             db.session.commit()
             result = user_schema.dump(users)
-            return jsonify(result)
-        return { "error":" You Dont have previlege to update other users"},403
+            return jsonify(result=result)
+        return {"error": " You Dont have previlege to update other users"}, 403
+
     @jwt_required
     def delete(self, user_id):
         users = UsersModel.query.get(user_id)
         if not users:
             return {"message": "Not found User"}, 404
         user_from_token = get_jwt_identity()
-        current_user = UsersModel.query.filter_by(email=user_from_token).first()
-        if current_user.id==user_id:
+        current_user = UsersModel.query.filter_by(
+            email=user_from_token).first()
+        if current_user.id == user_id:
             db.session.delete(users)
             db.session.commit()
             return{"message": " Successfully deleted."}, 200
-        return { "error":" You Dont have previlege to delete other users"},403
+        return {"error": " You Dont have previlege to delete other users"}, 403
+
+
+class AuthUser(Resource):
+    @jwt_required
+    def get(self):
+        user_from_token = get_jwt_identity()
+        current_user = UsersModel.query.filter_by(
+            email=user_from_token).first()
+        result = user_schema.dump(current_user)
+        return jsonify(result=result)

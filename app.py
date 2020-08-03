@@ -1,3 +1,4 @@
+from flask_cors import CORS, cross_origin
 from flask import Flask
 from flask_restful import Api
 from functools import wraps
@@ -5,7 +6,7 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Message
 
 
-from resources.users import UserLogin, UserRegister, UserReset, UserResource, Userslist
+from resources.users import UserLogin, UserRegister, UserReset, UserResource, Userslist, AuthUser
 from resources.tickets import TicketsList, TicketsResource
 from resources.feedback import FeedbacksResource, Feedbacks
 from resources.booking import BookingsList, BookingsResource
@@ -13,17 +14,16 @@ from resources.payment import PaymentsList, PaymentsResource
 import config
 app = Flask(__name__)
 
-
 api = Api(app)
 app.config.from_object('config')
 jwt = JWTManager(app)
+CORS(app)
 
 
 @app.before_request
 def create_tables():
     db.create_all()
     print("tables are updateing or created")
-
 
 
 # *** Endpoint/Routers
@@ -33,6 +33,7 @@ api.add_resource(UserResource, '/api/v1/user/<int:user_id>')
 api.add_resource(UserRegister, '/api/v1/register')
 api.add_resource(UserLogin, '/api/v1/login')
 api.add_resource(UserReset, '/api/v1/resetpassword')
+api.add_resource(AuthUser, '/api/v1/authuser')
 # *** end users endpoints
 
 # # *** start tickets endpoints
