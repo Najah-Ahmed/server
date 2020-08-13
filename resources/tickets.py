@@ -19,34 +19,33 @@ class TicketsList(Resource):
     def post(self):
         user_from_token = get_jwt_identity()
         user = UsersModel.query.filter_by(email=user_from_token).first()
-        ticket_id = 0
-        ticket_id += 1
+
         if user.is_Admin == True:
-            arriced_place = request.json['arriced_place']
-            destination_place = request.json['destination_place']
-            bus_id = request.json['bus_id']  # check dublication in db
-            bus_no_seat = request.json['bus_no_seat']
-            price_per_seat = request.json['price_per_seat']
-            time_of_journery = request.json['time_of_journery']
-            time_of_arrived = request.json['time_of_arrived']
+            arriced_place = request.json['arrivedPlace']
+            destination_place = request.json['destination']
+            bus_id = request.json['busId']  # check dublication in db
+            bus_no_seat = request.json['busSeats']
+            price_per_seat = request.json['pricePerSeat']
+            time_of_journery = request.json['timeJournery']
+            time_of_arrived = request.json['timeOfArrived']
             wakhtiga = request.json['wakhtiga']
             today = datetime.now().date()
             # print(date_of_day)
-            ticket_id += 1
-            url = f"api/v1/ticket/{ticket_id}"
+
+            url = f"api/v1/ticket/"
             if wakhtiga == "manta":
                 date_of_day = today
-                print(date_of_day)
+                # print(date_of_day)
             else:
                 date_of_day = today + timedelta(days=1)
-                print(date_of_day)
+                # print(date_of_day)
             created_at = str(datetime.now())
             new_tickets = TicketModel(arriced_place, destination_place, bus_id, bus_no_seat,
                                       price_per_seat, url, time_of_journery, time_of_arrived, date_of_day, created_at)
             db.session.add(new_tickets)
             db.session.commit()
             return {"message": "create tickets"}
-        return {"message": " NOT HAVE RIGHT PRIVAGE TO CREATE TRAVEL PLEASE CONTACT YOUR ADMIN"}, 403
+        return {"error": " NOT HAVE RIGHT PRIVAGE TO CREATE TRAVEL PLEASE CONTACT YOUR ADMIN"}, 403
 
 
 class TicketsResource(Resource):
@@ -55,7 +54,7 @@ class TicketsResource(Resource):
         if not ticket:
             return {"error": "Not found Ticket"}, 404
         result = ticket_schema.dump(ticket)
-        return jsonify(result)
+        return jsonify(result=result)
 
     @jwt_required
     def put(self, id):

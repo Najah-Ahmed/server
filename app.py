@@ -9,8 +9,8 @@ from flask_mail import Message
 from resources.users import UserLogin, UserRegister, UserReset, UserResource, Userslist, AuthUser
 from resources.tickets import TicketsList, TicketsResource
 from resources.feedback import FeedbacksResource, Feedbacks
-from resources.booking import BookingsList, BookingsResource
-from resources.payment import PaymentsList, PaymentsResource
+from resources.booking import SearchTicket, BookingsResource, BookingTicket
+from resources.payment import PaymentsList, PaymentsResource, PaymentBooking
 import config
 app = Flask(__name__)
 
@@ -49,14 +49,16 @@ api.add_resource(Feedbacks, '/api/v1/ticket/<int:id>/feedback')
 # # *** end feedback endpoints
 
 # # *** start booking endpoints
-# api.add_resource(BookingsList, '/api/v1/bookings?q=<string:arrived>/<string:destination>/<string:time>')
-api.add_resource(BookingsList, '/api/v1/bookings/')
+# api.add_resource(SearchTicket, '/api/v1/bookings?q=<string:arrived>/<string:destination>/<string:time>')
+api.add_resource(SearchTicket, '/api/v1/bookings/')
 api.add_resource(BookingsResource, '/api/v1/booking/<int:booking_id>')
+api.add_resource(BookingTicket, '/api/v1/bookingticket/<int:ticket_id>')
 # # *** end booking endpoints
 
 # # *** start payments endpoints
 api.add_resource(PaymentsList, '/api/v1/payments')
 api.add_resource(PaymentsResource, '/api/v1/payment/<int:trans_id>')
+api.add_resource(PaymentBooking, '/api/v1/bookingpayment/<int:booking_id>')
 # # *** end payments endpoints
 
 # ***running app

@@ -11,7 +11,7 @@ class BookingModel(db.Model):
     payment = db.relationship(
         'PaymentModel', backref='booking', lazy='dynamic')
     price = db.Column(db.Float)
-    seat_no = db.Column(db.Integer)
+    seat_no = db.Column(db.String(60))
     created_at = db.Column(db.DateTime)
 
     def __init__(self, user_id, ticket_id, price, seat_no, created_at):
