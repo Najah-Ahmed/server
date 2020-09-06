@@ -35,15 +35,23 @@ class PaymentBooking(Resource):
         fullname = request.json['fullname']
         method_of_pay = request.json['method_of_pay']
         phoneNum = request.json['phoneNum']
+        booking_amount = request.json['total_price']
         id = booking_id
         booking = BookingModel.query.get(id)
-        booking_amount = booking.price
         created_at = str(datetime.now())
-        new_trans = PaymentModel(user_id=current_user.id, booking_id=booking_id, package_id=None, amount=booking_amount,
-                                 phoneNum=phoneNum, fullname=fullname, method_of_pay=method_of_pay, created_at=created_at)
-        db.session.add(new_trans)
-        db.session.commit()
-        return {"message": "Successfully Transcation Thank You for Using Services"}
+        if booking_amount == '':
+            booking_amount = booking.price
+            new_trans = PaymentModel(user_id=current_user.id, booking_id=booking_id, package_id=None, amount=booking_amount,
+                                     phoneNum=phoneNum, fullname=fullname, method_of_pay=method_of_pay, created_at=created_at)
+            db.session.add(new_trans)
+            db.session.commit()
+            return {"message": "Successfully Transcation Thank You for Using Services"}
+        else:
+            new_trans = PaymentModel(user_id=current_user.id, booking_id=booking_id, package_id=None, amount=booking_amount,
+                                     phoneNum=phoneNum, fullname=fullname, method_of_pay=method_of_pay, created_at=created_at)
+            db.session.add(new_trans)
+            db.session.commit()
+            return {"message": "Successfully Transcation Thank You for Using Services"}
 
 
 class PaymentPacakage(Resource):
@@ -55,15 +63,23 @@ class PaymentPacakage(Resource):
         fullname = request.json['fullname']
         method_of_pay = request.json['method_of_pay']
         phoneNum = request.json['phoneNum']
+        package_amount = request.json['total_price']
         id = package_id
         package = PackagesModel.query.get(id)
-        package_amount = package.price
         created_at = str(datetime.now())
-        new_trans = PaymentModel(user_id=current_user.id, booking_id=None, package_id=package_id, amount=package_amount,
-                                 phoneNum=phoneNum, fullname=fullname, method_of_pay=method_of_pay, created_at=created_at)
-        db.session.add(new_trans)
-        db.session.commit()
-        return {"message": "Successfully Transcation Thank You for Using Services"}
+        if package_amount == '':
+            package_amount = package.price
+
+            new_trans = PaymentModel(user_id=current_user.id, booking_id=None, package_id=package_id, amount=package_amount,
+                                     phoneNum=phoneNum, fullname=fullname, method_of_pay=method_of_pay, created_at=created_at)
+            db.session.add(new_trans)
+            db.session.commit()
+        else:
+            new_trans = PaymentModel(user_id=current_user.id, booking_id=None, package_id=package_id, amount=package_amount,
+                                     phoneNum=phoneNum, fullname=fullname, method_of_pay=method_of_pay, created_at=created_at)
+            db.session.add(new_trans)
+            db.session.commit()
+            return {"message": "Successfully Transcation Thank You for Using Services"}
 
 
 class SingleUserPayment(Resource):
