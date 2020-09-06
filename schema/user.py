@@ -18,6 +18,9 @@ class UsersSchema(Schema):
     email = fields.Email()
     password = fields.String()
     phoneNum = fields.String()
+    profile_img = fields.String()
+    phoneNum_confirm = fields.Boolean()
+    email_confirm = fields.Boolean()
     feedback = fields.Nested(FeedbackSchema, many=True, only=[
                              'comment', 'rating', 'created_at'])
     booking = fields.Nested(BookingSchema)

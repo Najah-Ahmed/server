@@ -24,15 +24,10 @@ class SearchTicket(Resource):
             manta = today
             booking = TicketModel.query.filter_by(
                 arriced_place=arrived, destination_place=destination, date_of_day=manta).all()
-            # print(manta)
-
         else:
             bari = today + timedelta(days=1)
             booking = TicketModel.query.filter_by(
                 arriced_place=arrived, destination_place=destination, date_of_day=bari).all()
-            # print(bari)
-        # print(booking)
-        # return {"message": "get all tickets"}
         result = tickets_booking_schema.dump(booking)
 
         d = []
@@ -42,27 +37,6 @@ class SearchTicket(Resource):
 
 
 class BookingsResource(Resource):
-    @jwt_required
-    def get(self, booking_id):
-        user_from_token = get_jwt_identity()
-        current_user = UsersModel.query.filter_by(
-            email=user_from_token).first()
-        id = booking_id
-        booking = BookingModel.query.get(id)
-        if not booking:
-            return {"message": "Not found booking"}, 404
-        if current_user.id == booking.user_id:
-            records = db.session.query(BookingModel).all()
-
-            for record in records:
-                data = []
-                booking_merge = [record.seat_no]
-                data.append(booking_merge)
-                print(data)
-
-            result = booking_schema.dump(booking)
-            return jsonify(result=result)
-        return {"error": " You Dont have previlege to view other users bookings"}, 403
 
     def put(self, booking_id):
         return {"message": "refunding {}".format(booking_id)}
@@ -84,17 +58,6 @@ class BookingsResource(Resource):
 
 
 class BookingTicket(Resource):
-    # @jwt_required
-    def get(self, ticket_id):
-        tickets_booking = BookingModel.query.filter_by(
-            ticket_id=ticket_id).all()
-        for record in tickets_booking:
-            data = []
-            booking_merge = record.seat_no
-            data.append(booking_merge)
-
-            print(str(data))
-        return{"message": "Thank For Booking Ticket"}
 
     @jwt_required
     def post(self, ticket_id):
@@ -109,3 +72,26 @@ class BookingTicket(Resource):
         db.session.add(new_booking)
         db.session.commit()
         return{"message": "Thank For Booking Ticket"}
+
+
+class BookingList(Resource):
+    @jwt_required
+    def get(self):
+        user_from_token = get_jwt_identity()
+        user = UsersModel.query.filter_by(email=user_from_token).first()
+        if user.is_Admin == True:
+            result = BookingModel.query.all()
+            data = bookings_schema.dump(result)
+            return jsonify(data=data)
+        return{"error": "you don't have sufficient privileges to view all users please Contact Your Admin"}, 401
+
+
+class SingleUserBooking(Resource):
+    @jwt_required
+    def get(self):
+        user_from_token = get_jwt_identity()
+        user = UsersModel.query.filter_by(email=user_from_token).first()
+        id = user.id
+        result = BookingModel.query.filter_by(id=id).all()
+        data = bookings_schema.dump(result)
+        return jsonify(data=data)

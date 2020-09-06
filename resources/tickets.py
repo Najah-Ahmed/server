@@ -30,15 +30,14 @@ class TicketsList(Resource):
             time_of_arrived = request.json['timeOfArrived']
             wakhtiga = request.json['wakhtiga']
             today = datetime.now().date()
-            # print(date_of_day)
 
             url = f"api/v1/ticket/"
             if wakhtiga == "manta":
                 date_of_day = today
-                # print(date_of_day)
+
             else:
                 date_of_day = today + timedelta(days=1)
-                # print(date_of_day)
+
             created_at = str(datetime.now())
             new_tickets = TicketModel(arriced_place, destination_place, bus_id, bus_no_seat,
                                       price_per_seat, url, time_of_journery, time_of_arrived, date_of_day, created_at)
@@ -64,13 +63,21 @@ class TicketsResource(Resource):
             ticket = TicketModel.query.get(id)
             if not ticket:
                 return {"message": "Not found Ticket"}, 404
-            arriced_place = request.json['arriced_place']
-            destination_place = request.json['destination_place']
-            bus_id = request.json['bus_id']
-            bus_no_seat = request.json['bus_no_seat']
-            price_per_seat = request.json['price_per_seat']
-            time_of_journery = request.json['time_of_journery']
-            time_of_arrived = request.json['time_of_arrived']
+            arriced_place = request.json['arrivedPlace']
+            destination_place = request.json['destination']
+            bus_id = request.json['busId']  # check dublication in db
+            bus_no_seat = request.json['busSeats']
+            price_per_seat = request.json['pricePerSeat']
+            time_of_journery = request.json['timeJournery']
+            time_of_arrived = request.json['timeOfArrived']
+            wakhtiga = request.json['wakhtiga']
+            url = url = f"api/v1/ticket/{ticket.id}"
+            today = datetime.now().date()
+            if wakhtiga == "manta":
+                date_of_day = today
+
+            else:
+                date_of_day = today + timedelta(days=1)
 
             ticket.arriced_place = arriced_place
             ticket.destination_place = destination_place
@@ -79,6 +86,10 @@ class TicketsResource(Resource):
             ticket.price_per_seat = price_per_seat
             ticket.time_of_journery = time_of_journery
             ticket.time_of_arrived = time_of_arrived
+            ticket.wakhtiga = wakhtiga
+            ticket.date_of_day = date_of_day
+            ticket.url = url
+            print(ticket.url)
             db.session.commit()
             result = ticket_schema.dump(ticket)
             return jsonify(result)

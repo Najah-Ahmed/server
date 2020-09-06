@@ -1,4 +1,4 @@
-from flask import request, jsonify, Response, render_template
+from flask import request, jsonify, Response, render_template, url_for
 from datetime import datetime, timedelta
 from flask_restful import Resource
 from schema.user import user_schema, users_schema
@@ -7,11 +7,11 @@ from db import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
 from flask_mail import Message
+from mail import mail
 
-
-# email confirmed
-# phone confired
 # sent email or phone to forgetpassword
+from myToken import generate_confirmation_token, confirm_token
+from itsdangerous import SignatureExpired
 
 
 class UserRegister(Resource):
@@ -23,6 +23,9 @@ class UserRegister(Resource):
         password = request.json['password']
         phoneNum = request.json['phoneNum']
         is_Admin = 0
+        email_confirm = 0
+        phoneNum_confirm = 0
+        profile_img = 'defualt.jpg'
         created_at = str(datetime.now())
         check_email = UsersModel.query.filter_by(email=email).first()
         check_userName = UsersModel.query.filter_by(userName=userName).first()
@@ -35,8 +38,8 @@ class UserRegister(Resource):
             return {'error': 'An userName {}  already used.'.format(userName)}, 400
         else:
             hash_password = generate_password_hash(password)
-            new_user = UsersModel(fullName, userName, email,
-                                  hash_password, phoneNum, is_Admin, created_at)
+            new_user = UsersModel(fullName=fullName, userName=userName, email=email,
+                                  password=hash_password, phoneNum=phoneNum, profile_img=profile_img, email_confirm=email_confirm, phoneNum_confirm=phoneNum_confirm, is_Admin=is_Admin, created_at=created_at)
 
             db.session.add(new_user)
             db.session.commit()
@@ -160,3 +163,45 @@ class AuthUser(Resource):
             email=user_from_token).first()
         result = user_schema.dump(current_user)
         return jsonify(result=result)
+
+
+class VerifyEmailUser(Resource):
+  # localhost:5000/confirm/Im5hamFoQGFwcC5jb20i.X1S-VQ.KUUakF3m5hNGG2EoHXtCiAyvYRM
+    @jwt_required
+    def get(self):
+
+        user_from_token = get_jwt_identity()
+        current_user = UsersModel.query.filter_by(
+            email=user_from_token).first()
+
+        msg = Message("Email verification ",
+
+                      sender=('Najah from Bari*Galbeed Teams',
+                              'reportTeam@bariandgalbeed.com'),
+                      recipients=[current_user.email])
+        # token = generate_confirmation_token(current_user.email)
+        token = generate_confirmation_token(current_user.email)
+        url = 'localhost:5000/api/v1/confirm/'
+        confirm_url = url+token
+
+        # msg.html('< a href="{{ confirm_url }}" > {{ confirm_url }} < /a >')
+
+        link = confirm_url
+        msg.body = 'Your Link is {}'.format(link)
+        mail.send(msg)
+        return {"msg": "it sent"}
+
+
+class ConformToken(Resource):
+    def put(self, token):
+
+        confirm = confirm_token(token, expiration=20)
+
+        if confirm != '':
+            current_user = UsersModel.query.filter_by(
+                email=confirm).first()
+            email_confirm = 1
+            current_user.email_confirm = email_confirm
+            db.session.commit()
+            return {"msg": "it be confirm"}
+        return {"msg": "not confirm or expired Token"}
