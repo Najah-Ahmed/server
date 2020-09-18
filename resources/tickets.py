@@ -13,7 +13,7 @@ class TicketsList(Resource):
     def get(self):
         ticket = TicketModel.query.all()
         result = tickets_schema.dump(ticket)
-        return {"tickets": result}
+        return {"data": result}
 
     @jwt_required
     def post(self):
@@ -63,13 +63,13 @@ class TicketsResource(Resource):
             ticket = TicketModel.query.get(id)
             if not ticket:
                 return {"message": "Not found Ticket"}, 404
-            arriced_place = request.json['arrivedPlace']
-            destination_place = request.json['destination']
-            bus_id = request.json['busId']  # check dublication in db
-            bus_no_seat = request.json['busSeats']
-            price_per_seat = request.json['pricePerSeat']
-            time_of_journery = request.json['timeJournery']
-            time_of_arrived = request.json['timeOfArrived']
+            arriced_place = request.json['arrived_place']
+            destination_place = request.json['destination_place']
+            bus_id = request.json['bus_id']  # check dublication in db
+            bus_no_seat = request.json['bus_on_seats']
+            price_per_seat = request.json['price_per_seat']
+            time_of_journery = request.json['time_of_journery']
+            time_of_arrived = request.json['time_of_arrived']
             wakhtiga = request.json['wakhtiga']
             url = url = f"api/v1/ticket/{ticket.id}"
             today = datetime.now().date()
@@ -102,8 +102,8 @@ class TicketsResource(Resource):
         if user.is_Admin == True:
             ticket = TicketModel.query.get(id)
             if not ticket:
-                return {"message": "Not found Ticket"}, 404
+                return {"error": "Not found Ticket"}, 404
             db.session.delete(ticket)
             db.session.commit()
-            return{"message": " Successfully deleted."}, 200
+            return{"message": "Successfully deleted."}, 200
         return {"message": " NOT HAVE RIGHT PRIVAGE TO DELETE TRAVEL PLEASE CONTACT YOUR ADMIN"}, 403

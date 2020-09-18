@@ -32,7 +32,7 @@ class SearchTicket(Resource):
 
         d = []
         if result == d:
-            return {"message": "Empty Data"}, 400
+            return {"error": "Empty Data"}, 400
         return {"data": result}
 
 
@@ -61,11 +61,19 @@ class BookingTicket(Resource):
 
     @jwt_required
     def post(self, ticket_id):
+        id = ticket_id
         user_from_token = get_jwt_identity()
         user = UsersModel.query.filter_by(email=user_from_token).first()
-
+        ticket = TicketModel.query.get(id)
+        if not ticket:
+            return {"message": "Not found booking"}, 404
         price = request.json['price']
         seat_no = request.json['seat_no']
+        # counterSeat = request.json['counterSeat']
+
+        # price = ticket.price_per_seat*counterSeat
+        # print(price)
+
         created_at = str(datetime.now())
         new_booking = BookingModel(
             user_id=user.id, ticket_id=ticket_id, price=price, seat_no=seat_no, created_at=created_at)

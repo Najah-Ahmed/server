@@ -8,7 +8,7 @@ class PaymentSchema(ma.Schema):
     model = PaymentModel
 
     class Meta:
-        fields = ('user_id',  'booking_id', 'amount', 'package_id',
+        fields = ('id', 'user_id',  'booking_id', 'amount', 'package_id',
                   'fullname', 'phoneNum', 'method_of_pay', 'created_at')
 
 

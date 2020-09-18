@@ -31,11 +31,11 @@ class UserRegister(Resource):
         check_userName = UsersModel.query.filter_by(userName=userName).first()
         check_phoneNum = UsersModel.query.filter_by(phoneNum=phoneNum).first()
         if check_email:
-            return {'error': 'An email {}  already exist.'.format(email)}, 400
+            return {'error': 'An email  already exist.'}, 400
         elif check_phoneNum:
-            return {'error': 'An phoneNum {}  already exist.'.format(phoneNum)}, 400
+            return {'error': 'An phoneNum  already exist.'}, 400
         elif check_userName:
-            return {'error': 'An userName {}  already used.'.format(userName)}, 400
+            return {'error': 'An userName  already used.'}, 400
         else:
             hash_password = generate_password_hash(password)
             new_user = UsersModel(fullName=fullName, userName=userName, email=email,
@@ -52,7 +52,7 @@ class UserLogin(Resource):
         password = request.json['password']
         check_email = UsersModel.query.filter_by(email=email).first()
         if not check_email:
-            return {'error': 'Not found email '}, 404
+            return {'error': 'Not found email'}, 404
         user = UsersModel.query.filter_by(email=email).first()
         check_password = check_password_hash(user.password, password)
         if not check_password:
